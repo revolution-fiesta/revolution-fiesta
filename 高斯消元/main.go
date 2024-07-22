@@ -1,5 +1,6 @@
 package main
 
+//text，哈哈哈哈哈哈哈哈哈哈哈哈哈
 import (
 	"fmt"
 	"math"
@@ -102,17 +103,17 @@ func main() {
 
 			}
 		}
-	//	PrintfArray(n)
-	//	fmt.Println()
+		//	PrintfArray(n)
+		//	fmt.Println()
 		gauss(n)
-	//	PrintfArray(n)
-	//	fmt.Println()
+		//	PrintfArray(n)
+		//	fmt.Println()
 		for i := 1; i <= n; i++ {
 			if math.Abs(mat[i][i]) <= sml {
 				flag = 2
 				break
-			} else if mat[i][n + 1] < sml{
-			    flag = 2
+			} else if mat[i][n+1] < sml {
+				flag = 2
 				break
 			} else {
 				flag = 1
@@ -121,15 +122,15 @@ func main() {
 		//fmt.Println(flag)
 
 		if flag == 1 {
-		    max = 1
+			max = 1
 			for i := 2; i <= n; i++ {
-				if mat[i][n + 1] != float64(int(mat[i][n + 1])) {
+				if mat[i][n+1] != float64(int(mat[i][n+1])) {
 					flag = 2
 					break
 				}
-				if mat[i][n+1] == mat[max][n+1]  {
+				if mat[i][n+1] == mat[max][n+1] {
 					flag = 2
-				
+
 					break
 				}
 				if mat[i][n+1] > mat[max][n+1] {
@@ -139,23 +140,23 @@ func main() {
 			}
 
 		}
-	//	fmt.Println(flag)
+		//	fmt.Println(flag)
 		if flag == 1 {
 			if fk == 1 {
-			    fk = 2
-			   
+				fk = 2
+
 				flag = 2
 				break
 			}
 			maxmax = max
 			fk = 1
-			 
+
 		}
 	}
-    if fk == 0 || fk == 2{
-        fmt.Println("illegal")
-    }else if fk == 1{
-        fmt.Println(maxmax)
-    }
+	if fk == 0 || fk == 2 {
+		fmt.Println("illegal")
+	} else if fk == 1 {
+		fmt.Println(maxmax)
+	}
 
 }
