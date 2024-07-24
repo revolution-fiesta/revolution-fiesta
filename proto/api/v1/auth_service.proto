@@ -6,6 +6,16 @@ option go_package="go/v1";
 
 service AuthService {
     rpc Login(LoginRequest) returns (LoginResponse);
+    rpc Register(RegisterRequest) returns (RegisterResponse);
+}
+
+message RegisterRequest{
+    string name = 1;
+    string passwd = 2;
+}
+
+message RegisterResponse{
+    string token = 1;
 }
 
 message LoginRequest {
