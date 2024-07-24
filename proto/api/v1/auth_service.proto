@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package api.v1;
+
+option go_package="go/v1";
+
+service AuthService {
+    rpc Login(LoginRequest) returns (LoginResponse);
+}
+
+message LoginRequest {
+    string name = 1;
+    string passwd = 2;
+}
+
+message LoginResponse {
+    string token = 1;
+}
+
