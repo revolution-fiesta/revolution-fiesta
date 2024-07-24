@@ -43,6 +43,7 @@ func getPgConnUrl(usr, passwd, host, port, database string) string {
 
 	_, _ = builder.WriteRune('/')
 	_, _ = builder.WriteString(database)
+	_, _ = builder.WriteString("?sslmode=disable")
 
 	return builder.String()
 }
