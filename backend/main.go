@@ -36,7 +36,7 @@ func main() {
 
 	// start grpc server.
 	go func() {
-		listener, err := net.Listen("tcp", config.Port)
+		listener, err := net.Listen("tcp", ":"+config.Port)
 		if err != nil {
 			slog.Error(fmt.Sprintf("failed to listen at port %s", config.Port))
 			return
