@@ -6,13 +6,15 @@ import (
 	"main/backend/config"
 	"os"
 	"path/filepath"
+
+	_ "github.com/lib/pq"
 )
 
 // 迁移.
 func Migrate() {
 
 	// 读取配置信息
-	connStr := config.DatabaseURL
+	connStr := config.DatabaseUrl
 	version := config.Version // 获取当前版本号
 
 	// 输出当前版本号到日志
