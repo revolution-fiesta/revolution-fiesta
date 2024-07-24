@@ -7,11 +7,12 @@ import (
 const (
 	Version        string = "0.0.1"
 	Port           string = "8081"
-	DatabaseUsr    string = ""
-	DatabasePasswd string = ""
-	DatabaseHost   string = ""
-	DatabasePort   string = ""
-	DatabaseName   string = ""
+	DatabaseUsr    string = "postgres"
+	DatabasePasswd string = "Aa020111"
+	DatabaseHost   string = "localhost"
+	DatabasePort   string = "5432"
+	DatabaseName   string = "postgres"
+	SchemaFilePath string = "../schema.sql"
 )
 
 var (
