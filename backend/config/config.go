@@ -7,11 +7,11 @@ import (
 const (
 	Version        string = "0.0.1"
 	Port           string = "8081"
-	DatabaseUsr    string = ""
-	DatabasePasswd string = ""
-	DatabaseHost   string = ""
-	DatabasePort   string = ""
-	DatabaseName   string = ""
+	DatabaseUsr    string = "postgres"
+	DatabasePasswd string = "Aa020111"
+	DatabaseHost   string = "localhost"
+	DatabasePort   string = "5432"
+	DatabaseName   string = "postgres"
 )
 
 var (
@@ -43,6 +43,6 @@ func getPgConnUrl(usr, passwd, host, port, database string) string {
 
 	_, _ = builder.WriteRune('/')
 	_, _ = builder.WriteString(database)
-
+	_, _ = builder.WriteString("?sslmode=disable")
 	return builder.String()
 }
