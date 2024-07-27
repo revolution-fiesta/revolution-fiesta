@@ -6,12 +6,12 @@ import (
 
 const (
 	Version        string = "0.0.1"
-	Port           string = "8081"
+	Port           string = "8080"
 	DatabaseUsr    string = "postgres"
-	DatabasePasswd string = "Aa020111"
+	DatabasePasswd string = "270153"
 	DatabaseHost   string = "localhost"
 	DatabasePort   string = "5432"
-	DatabaseName   string = "postgres"
+	DatabaseName   string = "mydb"
 	SchemaFilePath string = "../schema.sql"
 )
 
