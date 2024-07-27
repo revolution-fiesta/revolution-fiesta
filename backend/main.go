@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"main/backend/api"
 	"main/backend/config"
-	"main/backend/migration"
+	"main/backend/store"
 	"net"
 	"os"
 	"os/signal"
@@ -17,7 +17,17 @@ import (
 )
 
 func main() {
-	migration.Migrate()
+	err := store.Init()
+	if err != nil {
+		slog.Error(fmt.Sprintf("failed to initiate store layer: %s", err.Error()))
+		return
+	}
+
+	err = store.Migrate()
+	if err != nil {
+		slog.Error(fmt.Sprintf("failed to migrate: %s", err.Error()))
+		return
+	}
 
 	// config grpc server.
 	server := grpc.NewServer()
@@ -30,6 +40,10 @@ func main() {
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		sig := <-c
+		err := store.Close()
+		if err != nil {
+			slog.Warn(err.Error())
+		}
 		slog.Info(fmt.Sprintf("%s received, bye~", sig.String()))
 		cancel()
 	}()

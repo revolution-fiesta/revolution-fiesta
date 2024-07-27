@@ -1,7 +1,7 @@
-package migration
+package store
 
 import (
-	"database/sql"
+	"fmt"
 	"log/slog"
 	"main/backend/config"
 	"os"
@@ -14,17 +14,9 @@ func Migrate() error {
 	// 输出当前版本号到日志
 	slog.Info(config.Version)
 
-	// 连接到数据库
-	db, err := sql.Open("postgres", config.DatabaseUrl)
-	if err != nil {
-		slog.Error("Failed to connect to postgre database")
-		return err
-	}
-	defer db.Close()
-
 	// 检查info表是否存在
 	var info_exists bool
-	err = db.QueryRow(`SELECT EXISTS (
+	err := db.QueryRow(`SELECT EXISTS (
 		SELECT FROM information_schema.tables 
 		WHERE table_schema = 'public'
 		AND table_name = 'info'
@@ -43,12 +35,13 @@ func Migrate() error {
 		// 执行 schema.sql 文件中的SQL语句
 		_, err = db.Exec(string(schemaSql))
 		if err != nil {
-			slog.Error("Failed to execute schema file", err)
+			slog.Error(fmt.Sprintf("Failed to execute schema file: %s", err.Error()))
 			return err
 		}
 		slog.Info("Database schema has updated successfully")
 		return nil
 	}
-	slog.Info("Skip migration.")
+
+	slog.Info("Skip migration")
 	return nil
 }
