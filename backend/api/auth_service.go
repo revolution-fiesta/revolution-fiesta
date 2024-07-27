@@ -48,7 +48,5 @@ func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v
 			Token: "注册失败，原因为数据库插入数据失败，请再试一遍",
 		}, err
 	}
-	return &v1pb.RegisterResponse{
-		Token: "注册成功，请返回登录",
-	}, nil
+	return nil,nil
 }
