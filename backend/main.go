@@ -40,8 +40,11 @@ func main() {
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		sig := <-c
-		err := store.Close()
-		if err != nil {
+		postgreErr, redisErr := store.Close()
+		if redisErr != nil {
+			slog.Warn(err.Error())
+		}
+		if postgreErr != nil {
 			slog.Warn(err.Error())
 		}
 		slog.Info(fmt.Sprintf("%s received, bye~", sig.String()))
