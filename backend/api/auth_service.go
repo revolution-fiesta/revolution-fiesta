@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"crypto/rand"
 	"crypto/sha256"
 	"database/sql"
 	"fmt"
@@ -12,10 +13,17 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func hashPassword(password string) string {
-	passwordBytes := []byte(password)
-	hash := sha256.Sum256(passwordBytes)
-	return fmt.Sprintf("%x", hash)
+// return hashed password and salt.
+func hashPassword(password string) (string, string) {
+	randBytes := make([]byte, 16)
+	_, _ = rand.Read(randBytes)
+
+	hasher := sha256.New()
+	hasher.Write(randBytes)
+	hasher.Write([]byte(password))
+	hash := hasher.Sum(nil)
+
+	return fmt.Sprintf("%x", hash), fmt.Sprintf("%x", randBytes)
 }
 
 type AuthService struct {
@@ -28,7 +36,7 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 	}, nil
 }
 func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v1pb.RegisterResponse, error) {
-	var passwordHash string = hashPassword(r.Passwd)
+	passwordHash, salt := hashPassword(r.Passwd)
 
 	//connect to postgre
 	db, err := sql.Open("postgres", config.DatabaseUrl)
@@ -38,9 +46,9 @@ func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v
 	}
 	defer db.Close()
 	// insert data to database
-	sqlStatement := `INSERT INTO users (name, passwd_hash,email,phone,id)
-		VALUES ($1, $2,$3,$4,$5)`
-	_, err = db.Exec(sqlStatement, r.Name, passwordHash, r.Email, r.Phone, r.Id)
+	sqlStatement := `INSERT INTO users (name, passwd_hash, salt, email, phone)
+		VALUES ($1, $2, $3, $4, $5)`
+	_, err = db.Exec(sqlStatement, r.Name, passwordHash, salt, r.Email, r.Phone)
 	if err != nil {
 		return nil, err
 	}
