@@ -34,9 +34,7 @@ func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v
 	db, err := sql.Open("postgres", config.DatabaseUrl)
 	if err != nil {
 		slog.Error("Failed to connect to postgre database")
-		return &v1pb.RegisterResponse{
-			Token: "注册失败，原因为数据库连接失败，请再试一遍",
-		}, err
+		return nil, err
 	}
 	defer db.Close()
 	// insert data to database
@@ -44,9 +42,7 @@ func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v
 		VALUES ($1, $2,$3,$4,$5)`
 	_, err = db.Exec(sqlStatement, r.Name, passwordHash, r.Email, r.Phone, r.Id)
 	if err != nil {
-		return &v1pb.RegisterResponse{
-			Token: "注册失败，原因为数据库插入数据失败，请再试一遍",
-		}, err
+		return nil, err
 	}
-	return nil,nil
+	return &v1pb.RegisterResponse{}, nil
 }
