@@ -43,20 +43,20 @@ func Init() error {
 
 func Close() (error, error) {
 	return func() error {
-			err := db.Close()
-			if err != nil {
-				slog.Error(fmt.Sprintf("Failed to close db: %s", err.Error()))
-				return err
-			}
-			slog.Info("db has been closed")
-			return nil
-		}(), func() error {
-			err := rdb.Close()
-			if err != nil {
-				slog.Error(fmt.Sprintf("Failed to close rdb: %s", err.Error()))
-				return err
-			}
-			slog.Info("rdb has been closed")
-			return nil
-		}()
+		err := db.Close()
+		if err != nil {
+			slog.Error(fmt.Sprintf("Failed to close db: %s", err.Error()))
+			return err
+		}
+		slog.Info("db has been closed")
+		return nil
+	}(), func() error {
+		err := rdb.Close()
+		if err != nil {
+			slog.Error(fmt.Sprintf("Failed to close rdb: %s", err.Error()))
+			return err
+		}
+		slog.Info("rdb has been closed")
+		return nil
+	}()
 }
