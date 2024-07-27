@@ -11,7 +11,10 @@ service AuthService {
 
 message RegisterRequest{
     string name = 1;
-    string passwd = 2;
+    string id = 2;
+    string passwd = 3;
+    string email = 4;
+    string phone = 5;
 }
 
 message RegisterResponse{
