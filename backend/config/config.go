@@ -8,10 +8,10 @@ const (
 	Version        string = "0.0.1"
 	Port           string = "8080"
 	DatabaseUsr    string = "postgres"
-	DatabasePasswd string = "270153"
+	DatabasePasswd string = "Aa020111"
 	DatabaseHost   string = "localhost"
 	DatabasePort   string = "5432"
-	DatabaseName   string = "mydb"
+	DatabaseName   string = "postgres"
 	SchemaFilePath string = "../schema.sql"
 )
 
