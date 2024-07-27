@@ -36,7 +36,7 @@ func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v
 		slog.Error("Failed to connect to postgre database")
 		return &v1pb.RegisterResponse{
 			Token: "注册失败，原因为数据库连接失败，请再试一遍",
-		}, nil
+		}, err
 	}
 	defer db.Close()
 	// insert data to database
