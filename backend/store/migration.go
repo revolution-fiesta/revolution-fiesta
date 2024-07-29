@@ -16,7 +16,7 @@ func Migrate() error {
 
 	// 检查info表是否存在
 	var info_exists bool
-	err := db.QueryRow(`SELECT EXISTS (
+	err := Db.QueryRow(`SELECT EXISTS (
 		SELECT FROM information_schema.tables 
 		WHERE table_schema = 'public'
 		AND table_name = 'info'
@@ -33,7 +33,7 @@ func Migrate() error {
 		}
 
 		// 执行 schema.sql 文件中的SQL语句
-		_, err = db.Exec(string(schemaSql))
+		_, err = Db.Exec(string(schemaSql))
 		if err != nil {
 			slog.Error(fmt.Sprintf("Failed to execute schema file: %s", err.Error()))
 			return err
