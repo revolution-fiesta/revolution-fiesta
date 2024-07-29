@@ -71,7 +71,6 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 	if err != nil {
 		return &v1pb.LoginResponse{}, err
 	}
-	//expiration := time.Hour / 4
 	err = store.RdbSetx(string(key), jsonValue, config.Expiration)
 	if err != nil {
 		return &v1pb.LoginResponse{}, err
