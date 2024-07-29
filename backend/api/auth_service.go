@@ -52,7 +52,7 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 	// The username and password are correct
 	claims := jwt.MapClaims{
 		"name": r.Name,
-		"exp":  time.Now().Add(time.Hour * 1 / 4).Unix(),
+		"exp":  config.Expiration,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	tokenString, err := token.SignedString(config.PrivateKey)
@@ -71,8 +71,8 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 	if err != nil {
 		return &v1pb.LoginResponse{}, err
 	}
-	expiration := time.Hour / 4
-	err = store.RdbSetx(string(key), jsonValue, expiration)
+	//expiration := time.Hour / 4
+	err = store.RdbSetx(string(key), jsonValue, config.Expiration)
 	if err != nil {
 		return &v1pb.LoginResponse{}, err
 	}

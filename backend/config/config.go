@@ -6,6 +6,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"strings"
+	"time"
 )
 
 const (
@@ -20,6 +21,7 @@ const (
 	RedisAddr      string = "127.0.0.1:6379"
 	RedisPassword  string = ""
 	RedisDB               = 0
+	Expiration     time.Duration = time.Hour / 4
 )
 
 var (
