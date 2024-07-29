@@ -18,7 +18,17 @@ func GetUser(name string) (salt string, passwd_hash string, id int, err error) {
 	err = db.QueryRow(query, name).Scan(&salt, &passwd_hash, &id)
 	return
 }
+func CheckNameIfExists(nameToCheck string) (bool,error){
+	query := `SELECT EXISTS (SELECT 1 FROM users WHERE name = $1)`
+	var exists bool
+	err := db.QueryRow(query,nameToCheck).Scan(&exists)
+	if err != nil{
+		return false,err
+	}
+	return exists,nil
+}
 func RdbSetx(key string, jsonValue []byte, expiration time.Duration) error {
 	err := rdb.Set(ctx, string(key), jsonValue, expiration).Err()
 	return err
 }
+

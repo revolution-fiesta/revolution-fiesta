@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"main/backend/config"
 	"main/backend/store"
+	v1 "main/proto/generated-go/api/v1"
 	v1pb "main/proto/generated-go/api/v1"
 	"time"
 
@@ -82,8 +83,16 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 }
 
 func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v1pb.RegisterResponse, error) {
+	// check the name if exists
+	exists, err := store.CheckNameIfExists(r.Name)
+	if err != nil {
+		return &v1.RegisterResponse{}, err
+	}
+	if exists {
+		return &v1pb.RegisterResponse{}, errors.New("The username already exists")
+	}
 	passwordHash, salt := hashPassword(r.Passwd)
-	err := store.CreateUser(r.Name, passwordHash, salt, r.Email, r.Phone)
+	err = store.CreateUser(r.Name, passwordHash, salt, r.Email, r.Phone)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to register")
 	}
