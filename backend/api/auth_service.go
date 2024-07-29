@@ -37,7 +37,7 @@ type AuthService struct {
 
 func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.LoginResponse, error) {
 	// Verify that the username and password match
-	salt, passwd_hash, id, err := store.GetUser(r.Name)
+	salt, passwdHash, id, err := store.GetUser(r.Name)
 	if err != nil {
 		return &v1pb.LoginResponse{}, err
 	}
@@ -46,7 +46,7 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 	hasher.Write(saltByte)
 	hasher.Write([]byte(r.Passwd))
 	hash := hasher.Sum(nil)
-	if passwd_hash != string(hash) {
+	if passwdHash != string(hash) {
 		return &v1pb.LoginResponse{}, errors.New("Wrong username or password")
 	}
 	// The username and password are correct
@@ -62,8 +62,8 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 	sessionId := uuid.New()
 	key := id
 	values := map[string]string{
-		"value1": tokenString,
-		"value2": sessionId.String(),
+		"Token":     tokenString,
+		"sessionId": sessionId.String(),
 	}
 	jsonValue, err := json.Marshal(values)
 	if err != nil {
