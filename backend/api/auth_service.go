@@ -37,17 +37,8 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 	if err != nil {
 		return &v1pb.LoginResponse{}, err
 	}
-<<<<<<< HEAD
 	hashString := hashPassword(r.Passwd, salt)
 	if passwdHash != hashString {
-=======
-	saltByte := []byte(salt)
-	hasher := sha256.New()
-	hasher.Write(saltByte)
-	hasher.Write([]byte(r.Passwd))
-	hash := hasher.Sum(nil)
-	if passwdHash != string(hash) {
->>>>>>> main
 		return &v1pb.LoginResponse{}, errors.New("Wrong username or password")
 	}
 	// The username and password are correct
@@ -83,7 +74,6 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v1pb.RegisterResponse, error) {
 	// check the name if exists
 	_, _, _, err := store.GetUser(r.Name)
-<<<<<<< HEAD
 
 	if err == sql.ErrNoRows {
 		salt := make([]byte, 16)
@@ -91,11 +81,6 @@ func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v
 		saltString := fmt.Sprintf("%x", salt)
 		passwordHash := hashPassword(r.Passwd, saltString)
 		err = store.CreateUser(r.Name, passwordHash, saltString, r.Email, r.Phone)
-=======
-	if err == sql.ErrNoRows {
-		passwordHash, salt := hashPassword(r.Passwd)
-		err = store.CreateUser(r.Name, passwordHash, salt, r.Email, r.Phone)
->>>>>>> main
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to register")
 		}

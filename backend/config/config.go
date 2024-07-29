@@ -3,11 +3,6 @@ package config
 import (
 	"crypto/rand"
 	"crypto/rsa"
-<<<<<<< HEAD
-=======
-	"crypto/x509"
-	"encoding/pem"
->>>>>>> main
 	"strings"
 	"time"
 )
@@ -29,7 +24,6 @@ const (
 
 var (
 	DatabaseUrl string
-<<<<<<< HEAD
 	PublicKey   *rsa.PublicKey
 	PrivateKey  *rsa.PrivateKey
 )
@@ -43,29 +37,6 @@ func createKey() (*rsa.PrivateKey, *rsa.PublicKey, error) {
 	publicKey := &privateKey.PublicKey
 
 	return privateKey, publicKey, nil
-=======
-	PublicKey   string
-	PrivateKey  string
-)
-
-func createKey() (string, string, error) {
-	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
-	if err != nil {
-		return "", "", err
-	}
-	publicKey := &privateKey.PublicKey
-	privateKeyPem := pem.EncodeToMemory(
-		&pem.Block{
-			Type:  "RSA PRIVATE KEY",
-			Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
-		},
-	)
-	publicKeyPem, err := x509.MarshalPKIXPublicKey(publicKey)
-	if err != nil {
-		return "", "", err
-	}
-	return string(privateKeyPem), string(publicKeyPem), nil
->>>>>>> main
 }
 func init() {
 	DatabaseUrl = getPgConnUrl(DatabaseUsr, DatabasePasswd, DatabaseHost, DatabasePort, DatabaseName)
