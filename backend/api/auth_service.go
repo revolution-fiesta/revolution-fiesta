@@ -27,7 +27,7 @@ func hashPassword(password string) (string, string) {
 	hasher.Write(randBytes)
 	hasher.Write([]byte(password))
 	hash := hasher.Sum(nil)
-
+	a
 	return fmt.Sprintf("%x", hash), fmt.Sprintf("%x", randBytes)
 }
 
