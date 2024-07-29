@@ -30,7 +30,7 @@ var (
 	PrivateKey  string
 )
 
-func CreateKey() (string, string, error) {
+func createKey() (string, string, error) {
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return "", "", err
@@ -50,7 +50,7 @@ func CreateKey() (string, string, error) {
 }
 func init() {
 	DatabaseUrl = getPgConnUrl(DatabaseUsr, DatabasePasswd, DatabaseHost, DatabasePort, DatabaseName)
-	PrivateKey, PublicKey, _ = CreateKey()
+	PrivateKey, PublicKey, _ = createKey()
 }
 
 func getPgConnUrl(usr, passwd, host, port, database string) string {
