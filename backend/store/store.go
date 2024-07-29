@@ -13,6 +13,7 @@ import (
 var (
 	db  *sql.DB
 	rdb *redis.Client
+	ctx context.Context
 )
 
 func Init() error {
@@ -31,7 +32,7 @@ func Init() error {
 		Password: config.RedisPassword,
 		DB:       config.RedisDB,
 	})
-	ctx := context.Background()
+	ctx = context.Background()
 	_, err = rdb.Ping(ctx).Result()
 	if err != nil {
 		slog.Error("Failed to connect Redis")
@@ -43,20 +44,20 @@ func Init() error {
 
 func Close() (error, error) {
 	return func() error {
-		err := db.Close()
-		if err != nil {
-			slog.Error(fmt.Sprintf("Failed to close db: %s", err.Error()))
-			return err
-		}
-		slog.Info("db has been closed")
-		return nil
-	}(), func() error {
-		err := rdb.Close()
-		if err != nil {
-			slog.Error(fmt.Sprintf("Failed to close rdb: %s", err.Error()))
-			return err
-		}
-		slog.Info("rdb has been closed")
-		return nil
-	}()
+			err := db.Close()
+			if err != nil {
+				slog.Error(fmt.Sprintf("Failed to close db: %s", err.Error()))
+				return err
+			}
+			slog.Info("db has been closed")
+			return nil
+		}(), func() error {
+			err := rdb.Close()
+			if err != nil {
+				slog.Error(fmt.Sprintf("Failed to close rdb: %s", err.Error()))
+				return err
+			}
+			slog.Info("rdb has been closed")
+			return nil
+		}()
 }
