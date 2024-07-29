@@ -19,7 +19,7 @@ func Migrate() error {
 	err := db.QueryRow(`SELECT EXISTS (
 		SELECT FROM information_schema.tables 
 		WHERE table_schema = 'public'
-		AND table_name = 'info'
+		AND table_name = 'users'
 	);`).Scan(&info_exists)
 	if err != nil {
 		slog.Error("Failed to check if info table exists")

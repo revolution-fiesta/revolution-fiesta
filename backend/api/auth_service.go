@@ -19,16 +19,12 @@ import (
 )
 
 // return hashed password and salt.
-func hashPassword(password string) (string, string) {
-	randBytes := make([]byte, 16)
-	_, _ = rand.Read(randBytes)
-
+func hashPassword(password string, salt string) string {
 	hasher := sha256.New()
-	hasher.Write(randBytes)
+	hasher.Write([]byte(salt))
 	hasher.Write([]byte(password))
 	hash := hasher.Sum(nil)
-
-	return fmt.Sprintf("%x", hash), fmt.Sprintf("%x", randBytes)
+	return fmt.Sprintf("%x", hash)
 }
 
 type AuthService struct {
@@ -41,12 +37,8 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 	if err != nil {
 		return &v1pb.LoginResponse{}, err
 	}
-	saltByte := []byte(salt)
-	hasher := sha256.New()
-	hasher.Write(saltByte)
-	hasher.Write([]byte(r.Passwd))
-	hash := hasher.Sum(nil)
-	if passwdHash != string(hash) {
+	hashString := hashPassword(r.Passwd, salt)
+	if passwdHash != hashString {
 		return &v1pb.LoginResponse{}, errors.New("Wrong username or password")
 	}
 	// The username and password are correct
@@ -82,9 +74,13 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v1pb.RegisterResponse, error) {
 	// check the name if exists
 	_, _, _, err := store.GetUser(r.Name)
+
 	if err == sql.ErrNoRows {
-		passwordHash, salt := hashPassword(r.Passwd)
-		err = store.CreateUser(r.Name, passwordHash, salt, r.Email, r.Phone)
+		salt := make([]byte, 16)
+		_, _ = rand.Read(salt)
+		saltString := fmt.Sprintf("%x", salt)
+		passwordHash := hashPassword(r.Passwd, saltString)
+		err = store.CreateUser(r.Name, passwordHash, saltString, r.Email, r.Phone)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to register")
 		}
