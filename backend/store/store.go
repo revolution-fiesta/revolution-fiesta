@@ -11,15 +11,15 @@ import (
 )
 
 var (
-	Db  *sql.DB
-	Rdb *redis.Client
-	Ctx context.Context
+	db  *sql.DB
+	rdb *redis.Client
+	ctx context.Context
 )
 
 func Init() error {
 	// connect to postgres
 	var err error
-	Db, err = sql.Open("postgres", config.DatabaseUrl)
+	db, err = sql.Open("postgres", config.DatabaseUrl)
 	if err != nil {
 		slog.Error("Failed to connect to Postgre database")
 		return err
@@ -27,13 +27,13 @@ func Init() error {
 	slog.Info("successfully initialize Postgres")
 
 	// connect to Redis
-	Rdb = redis.NewClient(&redis.Options{
+	rdb = redis.NewClient(&redis.Options{
 		Addr:     config.RedisAddr,
 		Password: config.RedisPassword,
 		DB:       config.RedisDB,
 	})
-	Ctx = context.Background()
-	_, err = Rdb.Ping(Ctx).Result()
+	ctx = context.Background()
+	_, err = rdb.Ping(ctx).Result()
 	if err != nil {
 		slog.Error("Failed to connect Redis")
 		return err
@@ -44,7 +44,7 @@ func Init() error {
 
 func Close() (error, error) {
 	return func() error {
-			err := Db.Close()
+			err := db.Close()
 			if err != nil {
 				slog.Error(fmt.Sprintf("Failed to close db: %s", err.Error()))
 				return err
@@ -52,7 +52,7 @@ func Close() (error, error) {
 			slog.Info("db has been closed")
 			return nil
 		}(), func() error {
-			err := Rdb.Close()
+			err := rdb.Close()
 			if err != nil {
 				slog.Error(fmt.Sprintf("Failed to close rdb: %s", err.Error()))
 				return err
