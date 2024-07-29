@@ -4,13 +4,13 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"main/backend/config"
 	"main/backend/store"
 	v1 "main/proto/generated-go/api/v1"
 	v1pb "main/proto/generated-go/api/v1"
-	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -52,48 +52,47 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 	// The username and password are correct
 	claims := jwt.MapClaims{
 		"name": r.Name,
-		"exp":  config.Expiration,
+		"exp":  config.TokenExpiration,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	tokenString, err := token.SignedString(config.PrivateKey)
 	if err != nil {
 		return &v1pb.LoginResponse{}, err
 	}
-	session_id := uuid.New()
+	sessionId := uuid.New()
 	key := id
-	value1 := tokenString
-	value2 := session_id
 	values := map[string]string{
-		"value1": value1,
-		"value2": value2.String(),
+		"value1": tokenString,
+		"value2": sessionId.String(),
 	}
 	jsonValue, err := json.Marshal(values)
 	if err != nil {
 		return &v1pb.LoginResponse{}, err
 	}
-	err = store.RdbSetx(string(key), jsonValue, config.Expiration)
+	err = store.RdbSetSession(string(key), jsonValue, config.TokenExpiration)
 	if err != nil {
 		return &v1pb.LoginResponse{}, err
 	}
 	return &v1pb.LoginResponse{
 		Token:     tokenString,
-		SessionId: session_id.String(),
+		SessionId: sessionId.String(),
 	}, nil
 }
 
 func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v1pb.RegisterResponse, error) {
 	// check the name if exists
-	exists, err := store.CheckNameIfExists(r.Name)
-	if err != nil {
+	_, _, _, err := store.GetUser(r.Name)
+	if err == sql.ErrNoRows {
+		passwordHash, salt := hashPassword(r.Passwd)
+		err = store.CreateUser(r.Name, passwordHash, salt, r.Email, r.Phone)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to register")
+		}
+		return &v1pb.RegisterResponse{}, nil
+	} else if err == nil {
+		return &v1.RegisterResponse{}, errors.New("The username already exists")
+	} else {
 		return &v1.RegisterResponse{}, err
 	}
-	if exists {
-		return &v1pb.RegisterResponse{}, errors.New("The username already exists")
-	}
-	passwordHash, salt := hashPassword(r.Passwd)
-	err = store.CreateUser(r.Name, passwordHash, salt, r.Email, r.Phone)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to register")
-	}
-	return &v1pb.RegisterResponse{}, nil
+
 }

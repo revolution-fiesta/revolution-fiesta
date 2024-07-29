@@ -13,22 +13,14 @@ VALUES ($1, $2, $3, $4, $5)`
 	}
 	return nil
 }
-func GetUser(name string) (salt string, passwd_hash string, id int, err error) {
+func GetUser(name string) (string, string, int, error) {
 	query := "SELECT salt, passwd_hash,id FROM users WHERE name = $1"
-	err = db.QueryRow(query, name).Scan(&salt, &passwd_hash, &id)
-	return
+	var salt, passwdHash string
+	var id int
+	err := db.QueryRow(query, name).Scan(&salt, &passwdHash, &id)
+	return salt, passwdHash, id, err
 }
-func CheckNameIfExists(nameToCheck string) (bool,error){
-	query := `SELECT EXISTS (SELECT 1 FROM users WHERE name = $1)`
-	var exists bool
-	err := db.QueryRow(query,nameToCheck).Scan(&exists)
-	if err != nil{
-		return false,err
-	}
-	return exists,nil
-}
-func RdbSetx(key string, jsonValue []byte, expiration time.Duration) error {
+func RdbSetSession(key string, jsonValue []byte, expiration time.Duration) error {
 	err := rdb.Set(ctx, string(key), jsonValue, expiration).Err()
 	return err
 }
-

@@ -10,47 +10,47 @@ import (
 )
 
 const (
-	Version        string = "0.0.1"
-	Port           string = "8080"
-	DatabaseUsr    string = "postgres"
-	DatabasePasswd string = "270153"
-	DatabaseHost   string = "localhost"
-	DatabasePort   string = "5432"
-	DatabaseName   string = "mydb"
-	SchemaFilePath string = "../schema.sql"
-	RedisAddr      string = "127.0.0.1:6379"
-	RedisPassword  string = ""
-	RedisDB               = 0
-	Expiration     time.Duration = time.Hour / 4
+	Version         string        = "0.0.1"
+	Port            string        = "8080"
+	DatabaseUsr     string        = "postgres"
+	DatabasePasswd  string        = "270153"
+	DatabaseHost    string        = "localhost"
+	DatabasePort    string        = "5432"
+	DatabaseName    string        = "mydb"
+	SchemaFilePath  string        = "../schema.sql"
+	RedisAddr       string        = "127.0.0.1:6379"
+	RedisPassword   string        = ""
+	RedisDB                       = 0
+	TokenExpiration time.Duration = time.Hour / 4
 )
 
 var (
 	DatabaseUrl string
-	PublicKey   string = ""
-	PrivateKey  string = ""
+	PublicKey   string
+	PrivateKey  string
 )
 
-func CreatKey() (string, string, error) {
+func CreateKey() (string, string, error) {
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return "", "", err
 	}
 	publicKey := &privateKey.PublicKey
-	privateKeyPEM := pem.EncodeToMemory(
+	privateKeyPem := pem.EncodeToMemory(
 		&pem.Block{
 			Type:  "RSA PRIVATE KEY",
 			Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
 		},
 	)
-	publicKeyPEM, err := x509.MarshalPKIXPublicKey(publicKey)
+	publicKeyPem, err := x509.MarshalPKIXPublicKey(publicKey)
 	if err != nil {
 		return "", "", err
 	}
-	return string(privateKeyPEM), string(publicKeyPEM), nil
+	return string(privateKeyPem), string(publicKeyPem), nil
 }
 func init() {
 	DatabaseUrl = getPgConnUrl(DatabaseUsr, DatabasePasswd, DatabaseHost, DatabasePort, DatabaseName)
-	PrivateKey, PublicKey, _ = CreatKey()
+	PrivateKey, PublicKey, _ = CreateKey()
 }
 
 func getPgConnUrl(usr, passwd, host, port, database string) string {
