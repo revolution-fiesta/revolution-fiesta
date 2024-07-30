@@ -8,17 +8,14 @@ import (
 
 func TestSendingMail(t *testing.T) {
 	mailClient := MailClient{
-		From:            "",
+		From:            "790874276@qq.com",
 		ServiceAuthCode: "wkktdkdalndhbdia",
 		ServiceDomain:   "smtp.qq.com",
 		ServicePort:     "587",
 	}
 
 	if err := mailClient.SendEmail(
-		[]string{
-			"123",
-			"",
-		}, "Hello! This is azusaings.",
+		[]string{}, "Hello! This is azusaings.",
 		[]byte("Welcome to Revolution Fiesta"),
 		[]byte("<h1>Welcome! This is Revolution Fiesta</h1><p>Congruatulations!</p><p>所以看起来中文不会乱码吧</p>"),
 	); err != nil {
