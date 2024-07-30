@@ -16,7 +16,7 @@ func TestSendingMail(t *testing.T) {
 
 	if err := mailClient.SendEmail(
 		[]string{
-			"",
+			"123",
 			"",
 		}, "Hello! This is azusaings.",
 		[]byte("Welcome to Revolution Fiesta"),
