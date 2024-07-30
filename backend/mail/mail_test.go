@@ -8,7 +8,7 @@ import (
 
 func TestSendingMail(t *testing.T) {
 	mailClient := MailClient{
-		From:            "790874276@qq.com",
+		From:            "",
 		ServiceAuthCode: "wkktdkdalndhbdia",
 		ServiceDomain:   "smtp.qq.com",
 		ServicePort:     "587",

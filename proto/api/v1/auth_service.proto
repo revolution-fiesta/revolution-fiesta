@@ -7,6 +7,7 @@ option go_package="go/v1";
 service AuthService {
     rpc Login(LoginRequest) returns (LoginResponse);
     rpc Register(RegisterRequest) returns (RegisterResponse);
+    rpc Logout(LogoutRequest) returns (LogoutResponse);
 }
 
 message RegisterRequest{
@@ -29,4 +30,10 @@ message LoginResponse {
     string token = 1;
     string session_id = 2;
 }
-
+message LogoutRequest{
+    string token = 1;
+    string id = 2;
+    string name = 3;
+}
+message LogoutResponse{
+}
