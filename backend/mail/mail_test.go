@@ -15,10 +15,7 @@ func TestSendingMail(t *testing.T) {
 	}
 
 	if err := mailClient.SendEmail(
-		[]string{
-			"790874276@qq.com",
-			"215117830@qq.com",
-		}, "Hello! This is azusaings.",
+		[]string{}, "Hello! This is azusaings.",
 		[]byte("Welcome to Revolution Fiesta"),
 		[]byte("<h1>Welcome! This is Revolution Fiesta</h1><p>Congruatulations!</p><p>所以看起来中文不会乱码吧</p>"),
 	); err != nil {
