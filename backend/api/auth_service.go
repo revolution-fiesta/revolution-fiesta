@@ -61,7 +61,7 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 	if err != nil {
 		return &v1pb.LoginResponse{}, err
 	}
-	err = store.RdbSetSession(string(key), jsonValue, config.TokenExpiration)
+	err = store.RdbSetSession(fmt.Sprint(key), jsonValue, config.TokenExpiration)
 	if err != nil {
 		return &v1pb.LoginResponse{}, err
 	}
@@ -74,7 +74,6 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v1pb.RegisterResponse, error) {
 	// check the name if exists
 	_, _, _, err := store.GetUser(r.Name)
-
 	if err == sql.ErrNoRows {
 		salt := make([]byte, 16)
 		_, _ = rand.Read(salt)
