@@ -24,3 +24,6 @@ func RdbSetSession(key string, jsonValue []byte, expiration time.Duration) error
 	err := rdb.Set(ctx, string(key), jsonValue, expiration).Err()
 	return err
 }
+func RdbDelSession(key string) error {
+	return rdb.Del(ctx, key).Err()
+}

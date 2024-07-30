@@ -91,3 +91,6 @@ func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v
 	}
 
 }
+func (s *AuthService) Logout(ctx context.Context, r *v1pb.LogoutRequest) (*v1pb.LogoutResponse, error) {
+	return &v1pb.LogoutResponse{}, store.RdbDelSession(fmt.Sprint(r.Id))
+}
