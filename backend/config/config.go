@@ -38,6 +38,7 @@ func createKey() (*rsa.PrivateKey, *rsa.PublicKey, error) {
 
 	return privateKey, publicKey, nil
 }
+
 func init() {
 	DatabaseUrl = getPgConnUrl(DatabaseUsr, DatabasePasswd, DatabaseHost, DatabasePort, DatabaseName)
 	PrivateKey, PublicKey, _ = createKey()

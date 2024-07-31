@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"main/backend/config"
 	"main/backend/store"
-	v1 "main/proto/generated-go/api/v1"
 	v1pb "main/proto/generated-go/api/v1"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -85,12 +84,13 @@ func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v
 		}
 		return &v1pb.RegisterResponse{}, nil
 	} else if err == nil {
-		return &v1.RegisterResponse{}, errors.New("The username already exists")
+		return &v1pb.RegisterResponse{}, errors.New("The username already exists")
 	} else {
-		return &v1.RegisterResponse{}, err
+		return &v1pb.RegisterResponse{}, err
 	}
 
 }
+
 func (s *AuthService) Logout(ctx context.Context, r *v1pb.LogoutRequest) (*v1pb.LogoutResponse, error) {
 	return &v1pb.LogoutResponse{}, store.RdbDelSession(fmt.Sprint(r.Id))
 }
