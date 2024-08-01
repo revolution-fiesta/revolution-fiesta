@@ -2,38 +2,36 @@ syntax = "proto3";
 
 package api.v1;
 
-option go_package="go/v1";
+option go_package = "go/v1";
 
 service AuthService {
-    rpc Login(LoginRequest) returns (LoginResponse);
-    rpc Register(RegisterRequest) returns (RegisterResponse);
-    rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
 }
 
-message RegisterRequest{
-    string name = 1;
-    string id = 2;
-    string passwd = 3;
-    string email = 4;
-    string phone = 5;
+message RegisterRequest {
+  string name = 1;
+  string id = 2;
+  string passwd = 3;
+  string email = 4;
+  string phone = 5;
 }
 
-message RegisterResponse{
-}
+message RegisterResponse {}
 
 message LoginRequest {
-    string name = 1;
-    string passwd = 2;
+  string name = 1;
+  string passwd = 2;
 }
 
 message LoginResponse {
-    string token = 1;
-    string session_id = 2;
+  string token = 1;
+  string session_id = 2;
 }
-message LogoutRequest{
-    string token = 1;
-    string id = 2;
-    string name = 3;
+message LogoutRequest {
+  string token = 1;
+  string id = 2;
+  string name = 3;
 }
-message LogoutResponse{
-}
+message LogoutResponse {}
