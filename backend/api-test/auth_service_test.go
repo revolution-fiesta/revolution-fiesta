@@ -2,6 +2,7 @@ package apitest
 
 import (
 	"context"
+	"fmt"
 	"main/backend/config"
 	v1pb "main/proto/generated-go/api/v1"
 	"testing"
@@ -24,8 +25,9 @@ func TestRegister(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	client.Register(context.Background(), &v1pb.RegisterRequest{
+	resp, err := client.Register(context.Background(), &v1pb.RegisterRequest{
 		Name:   "",
 		Passwd: "abc",
 	})
+	fmt.Println(resp, err)
 }
