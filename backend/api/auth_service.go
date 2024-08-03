@@ -32,12 +32,12 @@ type AuthService struct {
 
 func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.LoginResponse, error) {
 	// Verify that the username and password match
-	salt, passwdHash, id, err := store.GetUser(r.Name)
+	user, err := store.GetUserByName(r.Name)
 	if err != nil {
 		return &v1pb.LoginResponse{}, err
 	}
-	hashString := hashPassword(r.Passwd, salt)
-	if passwdHash != hashString {
+	hashString := hashPassword(r.Passwd, user.Salt)
+	if user.PasswdHash != hashString {
 		return &v1pb.LoginResponse{}, errors.New("Wrong username or password")
 	}
 	// The username and password are correct
@@ -51,7 +51,7 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 		return &v1pb.LoginResponse{}, err
 	}
 	sessionId := uuid.New()
-	key := id
+	key := user.Id
 	values := map[string]string{
 		"Token":     tokenString,
 		"sessionId": sessionId.String(),
@@ -71,24 +71,23 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 }
 
 func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v1pb.RegisterResponse, error) {
-	// check the name if exists
-	_, _, _, err := store.GetUser(r.Name)
-	if err == sql.ErrNoRows {
+	// check if the user exists.
+	_, err := store.GetUserByName(r.Name)
+	if err == nil {
+		return nil, errors.New("The username already exists")
+	} else if err == sql.ErrNoRows {
 		salt := make([]byte, 16)
 		_, _ = rand.Read(salt)
 		saltString := fmt.Sprintf("%x", salt)
 		passwordHash := hashPassword(r.Passwd, saltString)
-		err = store.CreateUser(r.Name, passwordHash, saltString, r.Email, r.Phone)
+		err = store.CreateUser(r.Name, passwordHash, saltString, r.Email, r.Phone, store.UserTypeRegular)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to register")
 		}
-		return &v1pb.RegisterResponse{}, nil
-	} else if err == nil {
-		return &v1pb.RegisterResponse{}, errors.New("The username already exists")
 	} else {
-		return &v1pb.RegisterResponse{}, err
+		return nil, err
 	}
-
+	return &v1pb.RegisterResponse{}, nil
 }
 
 func (s *AuthService) Logout(ctx context.Context, r *v1pb.LogoutRequest) (*v1pb.LogoutResponse, error) {
