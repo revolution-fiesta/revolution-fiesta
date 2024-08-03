@@ -1,7 +1,5 @@
 version: v1
 plugins:
-  - name: cpp
-    out: ../perf/
   - plugin: buf.build/protocolbuffers/go
     out: generated-go
     opt: paths=source_relative
