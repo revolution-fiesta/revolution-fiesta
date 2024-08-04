@@ -9,5 +9,5 @@ CREATE TABLE users (
     name TEXT NOT NULL,
     email TEXT NOT NULL,
     phone TEXT NOT NULL,
-    type TEXT CHECK ( type IN ('ADMIN', 'REGULAR')) NOT NULL
+    type TEXT CHECK ( type IN ('ADMIN', 'REGULAR'))
 );
