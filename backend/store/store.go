@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"main/backend/config"
+	"strings"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -13,15 +14,25 @@ import (
 var (
 	db  *sql.DB
 	rdb *redis.Client
-	ctx context.Context
 )
+
+type RedisNamespace string
+
+const (
+	redisNamespaceSession     RedisNamespace = "session"
+	redisNamespaceAccessToken RedisNamespace = "access_token"
+)
+
+func redisKey(args ...string) string {
+	return strings.Join(args, ":")
+}
 
 func Init() error {
 	// connect to postgres
 	var err error
 	db, err = sql.Open("postgres", config.DatabaseUrl)
 	if err != nil {
-		slog.Error("Failed to connect to Postgre database")
+		slog.Error("Failed to connect to Postgres")
 		return err
 	}
 	slog.Info("successfully initialize Postgres")
@@ -32,13 +43,11 @@ func Init() error {
 		Password: config.RedisPassword,
 		DB:       config.RedisDB,
 	})
-	ctx = context.Background()
-	_, err = rdb.Ping(ctx).Result()
-	if err != nil {
+	if err := rdb.Ping(context.Background()).Err(); err != nil {
 		slog.Error("Failed to connect Redis")
 		return err
 	}
-	slog.Info("successfully initialize Redis")
+	slog.Info("Successfully initialize Redis")
 	return nil
 }
 
@@ -49,7 +58,7 @@ func Close() (error, error) {
 				slog.Error(fmt.Sprintf("Failed to close db: %s", err.Error()))
 				return err
 			}
-			slog.Info("db has been closed")
+			slog.Info("Postgres connection has been closed")
 			return nil
 		}(), func() error {
 			err := rdb.Close()
@@ -57,7 +66,7 @@ func Close() (error, error) {
 				slog.Error(fmt.Sprintf("Failed to close rdb: %s", err.Error()))
 				return err
 			}
-			slog.Info("rdb has been closed")
+			slog.Info("Redis connection has been closed")
 			return nil
 		}()
 }
