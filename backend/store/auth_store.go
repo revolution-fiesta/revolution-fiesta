@@ -1,6 +1,7 @@
 package store
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -36,6 +37,11 @@ func GetUserByName(name string) (*User, error) {
 	var passwdHash, salt, usrName, email, phone, typ string
 	var id int
 	err := db.QueryRow(query, name).Scan(&id, &passwdHash, &salt, &usrName, &email, &phone, &typ)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, err
+	} else if err == sql.ErrNoRows {
+		return nil, nil
+	}
 	return &User{
 		Id:         id,
 		PasswdHash: passwdHash,

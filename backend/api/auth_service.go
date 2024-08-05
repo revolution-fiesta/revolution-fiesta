@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"main/backend/config"
@@ -72,21 +71,23 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 
 func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v1pb.RegisterResponse, error) {
 	// check if the user exists.
-	_, err := store.GetUserByName(r.Name)
-	if err == nil {
-		return nil, errors.New("The username already exists")
-	} else if err == sql.ErrNoRows {
-		salt := make([]byte, 16)
-		_, _ = rand.Read(salt)
-		saltString := fmt.Sprintf("%x", salt)
-		passwordHash := hashPassword(r.Passwd, saltString)
-		err = store.CreateUser(r.Name, passwordHash, saltString, r.Email, r.Phone, store.UserTypeRegular)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to register")
-		}
-	} else {
+	user, err := store.GetUserByName(r.Name)
+	if err != nil {
 		return nil, err
 	}
+	if user != nil {
+		return nil, errors.New("The username already exists")
+	}
+
+	salt := make([]byte, 16)
+	_, _ = rand.Read(salt)
+	saltString := fmt.Sprintf("%x", salt)
+	passwordHash := hashPassword(r.Passwd, saltString)
+	err = store.CreateUser(r.Name, passwordHash, saltString, r.Email, r.Phone, store.UserTypeRegular)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to register")
+	}
+
 	return &v1pb.RegisterResponse{}, nil
 }
 
