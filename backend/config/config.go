@@ -1,7 +1,6 @@
 package config
 
 import (
-	"crypto/rand"
 	"crypto/rsa"
 	"fmt"
 	"strings"
@@ -9,41 +8,29 @@ import (
 )
 
 const (
-	Version         string        = "0.0.1"
-	Port            string        = "8080"
-	DatabaseUsr     string        = "postgres"
-	DatabasePasswd  string        = "postgres"
-	DatabaseHost    string        = "114.132.70.108"
-	DatabasePort    string        = "5432"
-	DatabaseName    string        = "postgres"
-	SchemaFilePath  string        = "../schema.sql"
-	RedisAddr       string        = "114.132.70.108:6379"
-	RedisPassword   string        = ""
-	RedisDB                       = 0
-	TokenExpiration time.Duration = time.Hour / 4
+	Version               string        = "0.0.1"
+	Port                  string        = "8080"
+	DatabaseUsr           string        = "postgres"
+	DatabasePasswd        string        = "postgres"
+	DatabaseHost          string        = "114.132.70.108"
+	DatabasePort          string        = "5432"
+	DatabaseName          string        = "postgres"
+	SchemaFilePath        string        = "../schema.sql"
+	RedisAddr             string        = "114.132.70.108:6379"
+	RedisPassword         string        = ""
+	RedisDB                             = 0
+	ProjectName           string        = "revolution-fiesta"
+	AccessTokenExpiration time.Duration = time.Hour / 4
 )
 
 var (
 	DatabaseUrl string
 	LocalAddr   string
-	PublicKey   *rsa.PublicKey
 	PrivateKey  *rsa.PrivateKey
 )
 
-func createKey() (*rsa.PrivateKey, *rsa.PublicKey, error) {
-	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	publicKey := &privateKey.PublicKey
-
-	return privateKey, publicKey, nil
-}
-
 func init() {
 	DatabaseUrl = getPgConnUrl(DatabaseUsr, DatabasePasswd, DatabaseHost, DatabasePort, DatabaseName)
-	PrivateKey, PublicKey, _ = createKey()
 	LocalAddr = fmt.Sprintf("localhost:%s", Port)
 }
 

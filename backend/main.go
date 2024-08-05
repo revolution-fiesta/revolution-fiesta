@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"main/backend/api"
+	"main/backend/api/auth"
 	"main/backend/config"
 	"main/backend/store"
 	"net"
@@ -26,6 +27,12 @@ func main() {
 	err = store.Migrate()
 	if err != nil {
 		slog.Error(fmt.Sprintf("failed to migrate: %s", err.Error()))
+		return
+	}
+
+	config.PrivateKey, err = auth.GeneratePrivateKey()
+	if err != nil {
+		slog.Error("failed to generate rsa key pairs")
 		return
 	}
 

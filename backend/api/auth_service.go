@@ -3,69 +3,51 @@ package api
 import (
 	"context"
 	"crypto/rand"
+<<<<<<< HEAD
+=======
 	"crypto/sha256"
 	"encoding/json"
+>>>>>>> main
 	"fmt"
+	"main/backend/api/auth"
 	"main/backend/config"
 	"main/backend/store"
 	v1pb "main/proto/generated-go/api/v1"
+	"strconv"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
+	"go.uber.org/multierr"
 )
-
-// return hashed password and salt.
-func hashPassword(password string, salt string) string {
-	hasher := sha256.New()
-	hasher.Write([]byte(salt))
-	hasher.Write([]byte(password))
-	hash := hasher.Sum(nil)
-	return fmt.Sprintf("%x", hash)
-}
 
 type AuthService struct {
 	v1pb.UnimplementedAuthServiceServer
 }
 
 func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.LoginResponse, error) {
-	// Verify that the username and password match
+	// Make sure that the username and password match.
 	user, err := store.GetUserByName(r.Name)
 	if err != nil {
-		return &v1pb.LoginResponse{}, err
+		return nil, err
 	}
-	hashString := hashPassword(r.Passwd, user.Salt)
-	if user.PasswdHash != hashString {
-		return &v1pb.LoginResponse{}, errors.New("Wrong username or password")
+
+	if user.PasswdHash != auth.Sha256(r.Passwd, user.Salt) {
+		return nil, errors.New("Wrong username or password")
 	}
-	// The username and password are correct
-	claims := jwt.MapClaims{
-		"name": r.Name,
-		"exp":  config.TokenExpiration,
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-	tokenString, err := token.SignedString(config.PrivateKey)
+
+	token, err := auth.GenerateAccessToken(user.Id, config.PrivateKey)
 	if err != nil {
-		return &v1pb.LoginResponse{}, err
+		return nil, errors.Wrapf(err, "failed to generate access token")
 	}
-	sessionId := uuid.New()
-	key := user.Id
-	values := map[string]string{
-		"Token":     tokenString,
-		"sessionId": sessionId.String(),
+
+	sessionId := uuid.NewString()
+	if err := store.SetSession(ctx, strconv.Itoa(user.Id), []byte(sessionId)); err != nil {
+		return nil, err
 	}
-	jsonValue, err := json.Marshal(values)
-	if err != nil {
-		return &v1pb.LoginResponse{}, err
-	}
-	err = store.RdbSetSession(fmt.Sprint(key), jsonValue, config.TokenExpiration)
-	if err != nil {
-		return &v1pb.LoginResponse{}, err
-	}
+
 	return &v1pb.LoginResponse{
-		Token:     tokenString,
-		SessionId: sessionId.String(),
+		Token:     token,
+		SessionId: sessionId,
 	}, nil
 }
 
@@ -82,8 +64,13 @@ func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v
 	salt := make([]byte, 16)
 	_, _ = rand.Read(salt)
 	saltString := fmt.Sprintf("%x", salt)
+<<<<<<< HEAD
+	hashedPasswd := auth.Sha256(r.Passwd, saltString)
+	err = store.CreateUser(r.Name, hashedPasswd, saltString, r.Email, r.Phone, store.UserTypeRegular)
+=======
 	passwordHash := hashPassword(r.Passwd, saltString)
 	err = store.CreateUser(r.Name, passwordHash, saltString, r.Email, r.Phone, store.UserTypeRegular)
+>>>>>>> main
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to register")
 	}
@@ -92,5 +79,10 @@ func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v
 }
 
 func (s *AuthService) Logout(ctx context.Context, r *v1pb.LogoutRequest) (*v1pb.LogoutResponse, error) {
-	return &v1pb.LogoutResponse{}, store.RdbDelSession(fmt.Sprint(r.Id))
+	delSessionErr := store.DelSession(ctx, fmt.Sprint(r.Id))
+	deactivateTokenErr := store.DeactivateAccessToken(ctx, r.Token)
+	if err := multierr.Combine(delSessionErr, deactivateTokenErr); err != nil {
+		return nil, err
+	}
+	return &v1pb.LogoutResponse{}, nil
 }

@@ -11,10 +11,8 @@ import (
 
 // 迁移.
 func Migrate() error {
-	// 输出当前版本号到日志
 	slog.Info(config.Version)
 
-	// 检查info表是否存在
 	var info_exists bool
 	err := db.QueryRow(`SELECT EXISTS (
 		SELECT FROM information_schema.tables 
