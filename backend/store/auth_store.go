@@ -1,12 +1,17 @@
 package store
 
 import (
+<<<<<<< HEAD
 	"context"
 	"database/sql"
 	"fmt"
 	"main/backend/config"
 
 	"github.com/pkg/errors"
+=======
+	"database/sql"
+	"time"
+>>>>>>> main
 )
 
 type UserType string

@@ -3,6 +3,11 @@ package api
 import (
 	"context"
 	"crypto/rand"
+<<<<<<< HEAD
+=======
+	"crypto/sha256"
+	"encoding/json"
+>>>>>>> main
 	"fmt"
 	"main/backend/api/auth"
 	"main/backend/config"
@@ -59,8 +64,13 @@ func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v
 	salt := make([]byte, 16)
 	_, _ = rand.Read(salt)
 	saltString := fmt.Sprintf("%x", salt)
+<<<<<<< HEAD
 	hashedPasswd := auth.Sha256(r.Passwd, saltString)
 	err = store.CreateUser(r.Name, hashedPasswd, saltString, r.Email, r.Phone, store.UserTypeRegular)
+=======
+	passwordHash := hashPassword(r.Passwd, saltString)
+	err = store.CreateUser(r.Name, passwordHash, saltString, r.Email, r.Phone, store.UserTypeRegular)
+>>>>>>> main
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to register")
 	}
