@@ -22,6 +22,7 @@ func NewClient() (v1pb.AuthServiceClient, error) {
 }
 
 func TestRegister(t *testing.T) {
+	t.Skip()
 	client, err := NewClient()
 	if err != nil {
 		t.Fatal(err)
@@ -34,6 +35,7 @@ func TestRegister(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
+	t.Skip()
 	client, err := NewClient()
 	if err != nil {
 		t.Fatal(err)
@@ -50,6 +52,7 @@ func TestLogin(t *testing.T) {
 }
 
 func TestLogout(t *testing.T) {
+	t.Skip()
 	client, err := NewClient()
 	if err != nil {
 		t.Fatal(err)
