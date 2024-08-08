@@ -58,21 +58,21 @@ func GetUserByName(name string) (*User, error) {
 }
 
 func SetSession(ctx context.Context, key string, jsonValue []byte) error {
-	if err := rdb.Set(ctx, redisKey(string(redisNamespaceSession), key), jsonValue, config.AccessTokenExpiration).Err(); err != nil {
+	if err := rdb.Set(ctx, redisKey(string(redisSession), key), jsonValue, config.AccessTokenExpiration).Err(); err != nil {
 		return errors.Wrapf(err, "failed to set session")
 	}
 	return nil
 }
 
 func DelSession(ctx context.Context, session string) error {
-	if err := rdb.Del(ctx, redisKey(string(redisNamespaceSession), session)).Err(); err != nil {
+	if err := rdb.Del(ctx, redisKey(string(redisSession), session)).Err(); err != nil {
 		return errors.Wrapf(err, fmt.Sprintf("failed to delete session %q", session))
 	}
 	return nil
 }
 
 func DeactivateAccessToken(ctx context.Context, token string) error {
-	if err := rdb.SAdd(ctx, redisKey(string(redisNamespaceAccessToken)), token).Err(); err != nil {
+	if err := rdb.SAdd(ctx, redisKey(string(redisExpiredAccessToken)), token).Err(); err != nil {
 		return errors.Wrapf(err, fmt.Sprintf("failed to deactivate access token %q", token))
 	}
 	return nil

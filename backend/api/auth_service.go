@@ -5,7 +5,7 @@ import (
 	"crypto/rand"
 
 	"fmt"
-	"main/backend/api/auth"
+	"main/backend/api/utils"
 	"main/backend/config"
 	"main/backend/store"
 	v1pb "main/proto/generated-go/api/v1"
@@ -26,12 +26,15 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 	if err != nil {
 		return nil, err
 	}
+	if user == nil {
+		return nil, errors.New(fmt.Sprintf("user %q does not exists", r.Name))
+	}
 
-	if user.PasswdHash != auth.Sha256(r.Passwd, user.Salt) {
+	if user.PasswdHash != utils.Sha256(r.Passwd, user.Salt) {
 		return nil, errors.New("Wrong username or password")
 	}
 
-	token, err := auth.GenerateAccessToken(user.Id, config.PrivateKey)
+	token, err := utils.GenerateAccessToken(user.Id, config.PrivateKey)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to generate access token")
 	}
@@ -60,7 +63,7 @@ func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v
 	salt := make([]byte, 16)
 	_, _ = rand.Read(salt)
 	saltString := fmt.Sprintf("%x", salt)
-	hashedPasswd := auth.Sha256(r.Passwd, saltString)
+	hashedPasswd := utils.Sha256(r.Passwd, saltString)
 	err = store.CreateUser(r.Name, hashedPasswd, saltString, r.Email, r.Phone, store.UserTypeRegular)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to register")
