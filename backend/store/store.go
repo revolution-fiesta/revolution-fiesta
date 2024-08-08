@@ -19,8 +19,8 @@ var (
 type RedisNamespace string
 
 const (
-	redisNamespaceSession     RedisNamespace = "session"
-	redisNamespaceAccessToken RedisNamespace = "access_token"
+	redisSession            RedisNamespace = "session"
+	redisExpiredAccessToken RedisNamespace = "expired_access_token"
 )
 
 func redisKey(args ...string) string {
@@ -35,7 +35,7 @@ func Init() error {
 		slog.Error("Failed to connect to Postgres")
 		return err
 	}
-	slog.Info("successfully initialize Postgres")
+	slog.Info("Successfully initialize Postgres")
 
 	// connect to Redis
 	rdb = redis.NewClient(&redis.Options{

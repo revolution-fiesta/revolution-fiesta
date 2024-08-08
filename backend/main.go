@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	"main/backend/api"
-	"main/backend/api/auth"
+	"main/backend/api/interceptors"
+	"main/backend/api/utils"
 	"main/backend/config"
 	"main/backend/store"
 	"net"
@@ -30,14 +31,16 @@ func main() {
 		return
 	}
 
-	config.PrivateKey, err = auth.GeneratePrivateKey()
+	config.PrivateKey, err = utils.GeneratePrivateKey()
 	if err != nil {
 		slog.Error("failed to generate rsa key pairs")
 		return
 	}
 
 	// config grpc server.
-	server := grpc.NewServer()
+	server := grpc.NewServer(
+		grpc.UnaryInterceptor(interceptors.AuthInterceptor),
+	)
 	api.ConfigRouter(server)
 	reflection.Register(server)
 

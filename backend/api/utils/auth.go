@@ -1,4 +1,4 @@
-package auth
+package utils
 
 import (
 	"crypto/rand"
@@ -12,6 +12,11 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+)
+
+const (
+	HttpHeaderAuthorization string = "authorization"
+	HttpHeaderBearer        string = "bearer"
 )
 
 type AudienceType string
