@@ -42,8 +42,8 @@ func TestLogin(t *testing.T) {
 	}
 	ctx := context.Background()
 	resp, err := client.Login(ctx, &v1pb.LoginRequest{
-		Name:   "azusaings@gmail.com",
-		Passwd: "Aa020111",
+		Name:   "azusa@xxx.com",
+		Passwd: "xxxxxx",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -60,8 +60,8 @@ func TestLogout(t *testing.T) {
 	ctx := context.Background()
 
 	resp, err := client.Login(ctx, &v1pb.LoginRequest{
-		Name:   "azusaings@gmail.com",
-		Passwd: "Aa020111",
+		Name:   "azusa@xxx.com",
+		Passwd: "xxxxxx",
 	})
 	if err != nil {
 		t.Fatal(err)
