@@ -17,7 +17,7 @@ const (
 	DatabaseName          string        = "postgres"
 	SchemaFilePath        string        = "../schema.sql"
 	RedisAddr             string        = "114.132.70.108:6379"
-	RedisPassword         string        = ""
+	RedisPassword         string        = "redis"
 	RedisDB                             = 0
 	ProjectName           string        = "revolution-fiesta"
 	AccessTokenExpiration time.Duration = time.Hour / 4
