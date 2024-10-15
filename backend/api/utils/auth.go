@@ -79,3 +79,33 @@ func Sha256(text string, salt string) string {
 	_, _ = hasher.Write([]byte(text))
 	return fmt.Sprintf("%x", hasher.Sum(nil))
 }
+
+func GeneratePrivateKey() (*rsa.PrivateKey, error) {
+    privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+    if err != nil {
+        return nil, err
+    }
+    return privateKey, nil
+}
+func CheckUsername(username string) error {
+    //用户名长度限制
+    if len(username) == 0 {
+        return errors.New("The username is empty")
+    } else if len(username) < 6 {
+        return errors.New("The username length is too short")
+    } else if len(username) > 15 {
+        return errors.New("The username length is too long")
+    }
+    //用户名首个字符限制
+    if (username[0] >= '0' && username[0] <= '9') {
+        return errors.New("Usernames start with numbers")
+    }
+    //用户名不允许含有特殊字符
+    for _, val := range username {
+        if !((val >= 'a' && val <= 'z') || (val >= 'A' && val <= 'Z') || (val >= '0' && val <= '9') || val == '_' || val == '@') {
+            return errors.New("Usernames contain special characters")
+        }
+    }
+    return nil
+
+}
