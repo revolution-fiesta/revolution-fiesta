@@ -52,7 +52,9 @@ func (s *AuthService) Login(ctx context.Context, r *v1pb.LoginRequest) (*v1pb.Lo
 }
 
 func (s *AuthService) Register(ctx context.Context, r *v1pb.RegisterRequest) (*v1pb.RegisterResponse, error) {
-	
+	if err := utils.CheckUsername(r.Name); err != nil {
+		return nil, err
+	}
 	// check if the user exists.
 	user, err := store.GetUserByName(r.Name)
 	if err != nil {
